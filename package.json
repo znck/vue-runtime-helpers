@@ -1,6 +1,6 @@
 {
   "name": "vue-runtime-helpers",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Runtime helpers for Vue SFC.",
   "main": "dist/index.js",
   "repository": "https://github.com/znck/vue-runtime-helpers",
@@ -13,5 +13,7 @@
     "build": "tsc",
     "prepare": "npm run build"
   },
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ]
 }
