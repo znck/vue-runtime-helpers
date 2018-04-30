@@ -12,5 +12,6 @@
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
-  }
+  },
+  "files": ["dist"]
 }
