@@ -1,3 +1,6 @@
+import createInjector from '../inject-style/client'
+import createInjectorSSR from '../inject-style/server'
+
 export default function normalizeComponent(
   template: any,
   script: any,
@@ -25,7 +28,7 @@ export default function normalizeComponent(
     options._scopeId = 'data-v-' + scopeId
   }
 
-  let hook = style
+  let hook: undefined | ((context: any) => void) = undefined
   if (moduleIdentifier) {
     // server build
     hook = function(context: any) {
@@ -40,7 +43,7 @@ export default function normalizeComponent(
       }
       // inject component styles
       if (style) {
-        style.call(this, context)
+        style.call(this, createInjectorSSR(context))
       }
       // register component module identifier for async chunk inferrence
       if (context && context._registeredComponents) {
@@ -50,20 +53,24 @@ export default function normalizeComponent(
     // used by ssr in case component is cached and beforeCreate
     // never gets called
     options._ssrRegister = hook
+  } else if (style) {
+    hook = function(context: any) {
+      style.call(createInjector(context))
+    }
   }
 
-  if (hook) {
+  if (hook != undefined) {
     if (options.functional) {
       // register for functional component in vue file
       const originalRender = options.render
       options.render = function renderWithStyleInjection(h: any, context: any) {
-        hook.call(context)
+        ;(<any>hook).call(context)
         return originalRender(h, context)
       }
     } else {
       // inject component registration as beforeCreate hook
       const existing = options.beforeCreate
-      options.beforeCreate = existing ? [].concat(existing, hook) : [hook]
+      options.beforeCreate = existing ? [].concat(existing, <any>hook) : [hook]
     }
   }
 
