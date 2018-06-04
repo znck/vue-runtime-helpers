@@ -4,7 +4,7 @@
     "outDir": "dist",
     "sourceMap": false,
     "target": "es6",
-    "module": "commonjs",
+    "module": "es6",
     "moduleResolution": "node",
     "declaration": true,
     "allowJs": false,
@@ -13,7 +13,8 @@
     "strictNullChecks": true,
     "noImplicitAny": true,
     "removeComments": false,
-    "lib": ["es6", "es7", "dom"]
+    "lib": ["es2015", "es6", "es7", "dom"]
   },
-  "include": ["src", "typings"]
+  "include": ["src", "typings"],
+  "exclude": ["node_modules"]
 }

@@ -1,4 +1,11 @@
-import { StyleSource } from './base'
+export interface StyleSource {
+  source: string
+  media?: string
+  moduleName?: string
+  module?: { [key: string]: string }
+  map?: any
+}
+
 
 const isOldIE =
   typeof navigator !== 'undefined' &&
@@ -18,12 +25,12 @@ const HEAD = document.head || document.getElementsByTagName('head')[0]
 const styles: { [key: string]: StyleElementContent } = {}
 function addStyle(id: string, css: StyleSource) {
   const group = isOldIE ? css.media || 'default' : id
-  const style = styles[group]
+  const style = styles[group] || (styles[group] = { ids: new Set(), styles: [] })
 
   if (!style.ids.has(id)) {
     style.ids.add(id)
     let code = css.source
-    if (process.env.NODE_ENV !== 'production' && css.map) {
+    if (css.map) {
       // https://developer.chrome.com/devtools/docs/javascript-debugging
       // this makes source maps inside style tags work properly in Chrome
       code += '\n/*# sourceURL=' + css.map.sources[0] + ' */'

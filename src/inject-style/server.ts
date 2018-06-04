@@ -1,9 +1,15 @@
-import { StyleSource, hasProperty } from './base'
+export interface StyleSource {
+  source: string
+  media?: string
+  moduleName?: string
+  module?: { [key: string]: string }
+  map?: any
+}
 
 interface StyleElementContent {
   media?: string
-  ids: Set<string>
-  parts: string[]
+  ids: Array<string>
+  css: string
 }
 
 interface StyleElements {
@@ -16,19 +22,24 @@ interface SSRContext {
   _renderStyles: (styles: StyleElements) => string
 }
 
-export default function createInjector(context: any) {
+export default function createInjectorSSR(context: any) {
   if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
     context = __VUE_SSR_CONTEXT__
   }
 
-  if (!context) return () => {}
+  if (!context) return () => {
+    console.log('No context!')
+  }
 
-  if (!hasProperty(context, 'styles')) {
+  console.log('Has context!')
+
+  if (!('styles' in context)) {
+    context._styles = context._styles || {}
     Object.defineProperty(context, 'styles', {
       enumerable: true,
       get: () => context._styles
     })
-    context._renderStyles = renderStyles
+    context._renderStyles = context._renderStyles || renderStyles
   }
 
   return (id: string, style: StyleSource) => addStyle(id, style, context)
@@ -38,11 +49,11 @@ function addStyle(id: string, css: StyleSource, context: SSRContext) {
   const group: string =
     process.env.NODE_ENV === 'production' ? css.media || 'default' : id
 
-  const style = context._styles[group]
+  const style = context._styles[group] || (context._styles[group] = { ids: [], css: '' })
 
-  if (!style.ids.has(id)) {
+  if (!style.ids.includes(id)) {
     style.media = css.media
-    style.ids.add(id)
+    style.ids.push(id)
     let code = css.source
     if (process.env.NODE_ENV !== 'production' && css.map) {
       // https://developer.chrome.com/devtools/docs/javascript-debugging
@@ -54,7 +65,7 @@ function addStyle(id: string, css: StyleSource, context: SSRContext) {
         btoa(unescape(encodeURIComponent(JSON.stringify(css.map)))) +
         ' */'
     }
-    style.parts.push(code)
+    style.css += code + '\n'
   }
 }
 function renderStyles(styles: StyleElements): string {
@@ -67,7 +78,7 @@ function renderStyles(styles: StyleElements): string {
       '"' +
       (style.media ? ' media="' + style.media + '"' : '') +
       '>' +
-      style.parts.join('\n') +
+      style.css +
       '</style>'
   }
 

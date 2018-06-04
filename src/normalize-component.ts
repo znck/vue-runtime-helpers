@@ -1,18 +1,30 @@
-import createInjector from '../inject-style/client'
-import createInjectorSSR from '../inject-style/server'
+export interface CompiledTemplate {
+  render: Function
+  staticRenderFns: Function[]
+}
 
 export default function normalizeComponent(
-  template: any,
+  template: CompiledTemplate | undefined,
+  style: ((context: any) => void) | undefined,
   script: any,
-  style: any,
-  isFunctionalTemplate: boolean,
   scopeId: string | undefined,
-  moduleIdentifier: string | undefined /* server only */
+  isFunctionalTemplate: boolean,
+  moduleIdentifier: string | undefined /* server only */,
+  shadowMode: boolean,
+  createInjector: any,
+  createInjectorSSR: any,
+  createInjectorShadow: any
 ) {
+  if (typeof shadowMode === 'function') {
+    createInjectorSSR = createInjector
+    createInjector = shadowMode
+    shadowMode = false
+  }
+  // Vue.extend constructor export interop
   const options = typeof script === 'function' ? script.options : script
 
   // render functions
-  if (!options.render) {
+  if (template && template.render) {
     options.render = template.render
     options.staticRenderFns = template.staticRenderFns
     options._compiled = true
@@ -25,10 +37,10 @@ export default function normalizeComponent(
 
   // scopedId
   if (scopeId) {
-    options._scopeId = 'data-v-' + scopeId
+    options._scopeId = scopeId
   }
 
-  let hook: undefined | ((context: any) => void) = undefined
+  let hook: any
   if (moduleIdentifier) {
     // server build
     hook = function(context: any) {
@@ -45,7 +57,7 @@ export default function normalizeComponent(
       if (style) {
         style.call(this, createInjectorSSR(context))
       }
-      // register component module identifier for async chunk inferrence
+      // register component module identifier for async chunk inference
       if (context && context._registeredComponents) {
         context._registeredComponents.add(moduleIdentifier)
       }
@@ -54,28 +66,29 @@ export default function normalizeComponent(
     // never gets called
     options._ssrRegister = hook
   } else if (style) {
-    hook = function(context: any) {
-      style.call(createInjector(context))
-    }
+    hook = shadowMode
+      ? function() {
+        style.call(this, createInjectorShadow(this.$root.$options.shadowRoot))
+      }
+      : function(context: any) {
+          style.call(this, createInjector(context))
+        }
   }
 
-  if (hook != undefined) {
+  if (hook) {
     if (options.functional) {
       // register for functional component in vue file
       const originalRender = options.render
       options.render = function renderWithStyleInjection(h: any, context: any) {
-        ;(<any>hook).call(context)
+        hook.call(context)
         return originalRender(h, context)
       }
     } else {
       // inject component registration as beforeCreate hook
       const existing = options.beforeCreate
-      options.beforeCreate = existing ? [].concat(existing, <any>hook) : [hook]
+      options.beforeCreate = existing ? [].concat(existing, hook as any) : [hook]
     }
   }
 
-  return {
-    exports: script,
-    options: options
-  }
+  return script
 }

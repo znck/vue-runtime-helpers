@@ -2,16 +2,35 @@
   "name": "vue-runtime-helpers",
   "version": "0.1.2",
   "description": "Runtime helpers for Vue SFC.",
-  "main": "dist/index.js",
+  "main": "dist/normalize-component.js",
   "repository": "https://github.com/znck/vue-runtime-helpers",
   "author": "Rahul Kadyan",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^2.8.3"
+    "@types/jest": "^22.2.3",
+    "@types/node": "^10.0.9",
+    "@types/puppeteer": "^1.3.2",
+    "@vue/component-compiler": "^3.3.3",
+    "@znck/promised": "^1.0.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "jest": "^22.4.3",
+    "postcss": "^6.0.22",
+    "puppeteer": "^1.4.0",
+    "rollup": "^0.59.4",
+    "rollup-plugin-commonjs": "^9.1.3",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "ts-jest": "^22.4.6",
+    "typescript": "^2.8.3",
+    "vue": "^2.5.16",
+    "vue-server-renderer": "^2.5.16",
+    "vue-template-compiler": "^2.5.16"
   },
   "scripts": {
+    "prebuild": "rm -rf dist/",
     "build": "tsc",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "pretest": "npm run build",
+    "test": "jest"
   },
   "files": [
     "dist"
