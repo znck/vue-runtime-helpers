@@ -12,8 +12,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### BREAKING CHANGE
 
-* `normalize-component.js` moved to
-`dist/normalize-component.js`
+* `normalize-component.js` moved to `dist/normalize-component.js`
 
 
 <a name="0.1.2"></a>
