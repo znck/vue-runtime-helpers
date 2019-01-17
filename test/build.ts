@@ -8,6 +8,7 @@ import {
   assemble,
   SFCCompiler
 } from '@vue/component-compiler'
+import { ModuleFormat } from 'rollup';
 
 const pluginNodeResolve = require('rollup-plugin-node-resolve')
 const pluginCommonJS = require('rollup-plugin-commonjs')
@@ -40,9 +41,12 @@ export function pluginCreateVueApp(filename: string, component: string, exportFn
 function pluginVue(target: string): any {
   const compiler = createDefaultCompiler({
     template: {
-      optimizeSSR: target === 'server'
+      compiler: require('vue-template-compiler'),
+      compilerOptions: {},
+      optimizeSSR: target === 'server',
+      isProduction: true
     }
-  } as any)
+  })
 
   return {
     transform(content, id) {
@@ -52,8 +56,8 @@ function pluginVue(target: string): any {
 
       return assemble(compiler, id, result, {
         normalizer: '~' + require.resolve('../dist/normalize-component'),
-        styleInjector: '~' + require.resolve('../dist/inject-style/browser.js'),
-        styleInjectorSSR: '~' + require.resolve('../dist/inject-style/server.js')
+        styleInjector: '~' + require.resolve('../dist/inject-style/browser'),
+        styleInjectorSSR: '~' + require.resolve('../dist/inject-style/server')
       })
     }
   }
@@ -64,7 +68,7 @@ const cache = {}
 export async function build(
   filename: string,
   target: string = 'browser',
-  format: string = 'iife'
+  format: ModuleFormat = 'iife'
 ): Promise<string> {
   const cacheKey = JSON.stringify({ filename })
   if (cacheKey in cache) return cache[cacheKey]
@@ -81,13 +85,15 @@ export async function build(
     external: ['vue']
   })
 
-  cache[cacheKey] = (await bundle.generate({
+  const result = await bundle.generate({
     format,
     name: 'App',
     globals: {
       vue: 'Vue'
     }
-  } as any)).code
+  })
+
+  cache[cacheKey] = result.output[0].code
 
   return cache[cacheKey]
 }
@@ -108,7 +114,7 @@ export async function buildForServer(filename: string) {
 
   // Step 2: Create a renderer
   const renderer = require('vue-server-renderer').createBundleRenderer(code, {
-    runInNewContext: false,
+    // runInNewContext: false,
     template: `
     <!DOCTYPE html>
     <html lang="en">
@@ -120,5 +126,7 @@ export async function buildForServer(filename: string) {
   `
   })
 
-  return await renderer.renderToString()
+  const context: any = {}
+
+  return await renderer.renderToString(context)
 }

@@ -17,7 +17,7 @@ interface StyleElements {
 }
 
 interface SSRContext {
-  styles: StyleElements
+  styles: string
   _styles: StyleElements
   _renderStyles: (styles: StyleElements) => string
 }
@@ -27,17 +27,13 @@ export default function createInjectorSSR(context: any) {
     context = __VUE_SSR_CONTEXT__
   }
 
-  if (!context) return () => {
-    console.log('No context!')
-  }
-
-  console.log('Has context!')
+  if (!context) return () => {}
 
   if (!('styles' in context)) {
     context._styles = context._styles || {}
     Object.defineProperty(context, 'styles', {
       enumerable: true,
-      get: () => context._styles
+      get: () => context._renderStyles(context._styles)
     })
     context._renderStyles = context._renderStyles || renderStyles
   }

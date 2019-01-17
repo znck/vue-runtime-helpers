@@ -15,12 +15,12 @@ export default function normalizeComponent(
   createInjectorSSR: any,
   createInjectorShadow: any
 ) {
-  if (typeof shadowMode === 'function') {
+  if (typeof shadowMode !== 'boolean') {
     createInjectorSSR = createInjector
     createInjector = shadowMode
     shadowMode = false
   }
-  // Vue.extend constructor export interop
+  // Vue.extend constructor export interop.
   const options = typeof script === 'function' ? script.options : script
 
   // render functions
