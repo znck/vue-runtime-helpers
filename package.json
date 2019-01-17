@@ -1,6 +1,6 @@
 {
   "name": "vue-runtime-helpers",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "Runtime helpers for Vue SFC.",
   "repository": "https://github.com/znck/vue-runtime-helpers",
   "author": "Rahul Kadyan",
