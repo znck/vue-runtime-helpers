@@ -21,7 +21,7 @@ export interface StyleElementContent {
   element?: HTMLStyleElement
 }
 
-const HEAD = document.head || document.getElementsByTagName('head')[0]
+const HEAD?: HTMLElement = undefined
 const styles: { [key: string]: StyleElementContent } = {}
 function addStyle(id: string, css: StyleSource) {
   const group = isOldIE ? css.media || 'default' : id
@@ -45,6 +45,9 @@ function addStyle(id: string, css: StyleSource) {
       style.element = document.createElement('style')
       style.element.type = 'text/css'
       if (css.media) style.element.setAttribute('media', css.media)
+      if (HEAD === undefined) {
+        HEAD = document.head || document.getElementsByTagName('head')[0]
+      }
       HEAD.appendChild(style.element)
     }
 
