@@ -21,7 +21,7 @@ export interface StyleElementContent {
   element?: HTMLStyleElement
 }
 
-const HEAD?: HTMLElement = undefined
+let HEAD: HTMLElement | undefined
 const styles: { [key: string]: StyleElementContent } = {}
 function addStyle(id: string, css: StyleSource) {
   const group = isOldIE ? css.media || 'default' : id
