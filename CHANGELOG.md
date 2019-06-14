@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.1"></a>
+## <small>1.0.1 (2019-06-14)</small>
+
+* chore: fix type ([806a4a7](https://github.com/znck/vue-runtime-helpers/commit/806a4a7))
+* chore: update changelog ([4517901](https://github.com/znck/vue-runtime-helpers/commit/4517901))
+* fix: Lazily get document.head (#2) ([02d9dfa](https://github.com/znck/vue-runtime-helpers/commit/02d9dfa)), closes [#2](https://github.com/znck/vue-runtime-helpers/issues/2)
+
+
+
 <a name="1.0.0"></a>
 ## 1.0.0 (2019-01-17)
 
