@@ -58,7 +58,7 @@ function addStyle(id: string, css: StyleSource, context: SSRContext) {
       // http://stackoverflow.com/a/26603875
       code +=
         '\n/*# sourceMappingURL=data:application/json;base64,' +
-        btoa(unescape(encodeURIComponent(JSON.stringify(css.map)))) +
+        Buffer.from(unescape(encodeURIComponent(JSON.stringify(css.map)))).toString('base64') +
         ' */'
     }
     style.css += code + '\n'
