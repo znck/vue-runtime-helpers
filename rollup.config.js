@@ -38,4 +38,5 @@ export default [
   config('normalize-component.ts'),
   config('inject-style/browser.ts'),
   config('inject-style/server.ts'),
+  config('inject-style/shadow.ts'),
 ].flat(1)
