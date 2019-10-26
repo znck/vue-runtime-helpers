@@ -67,8 +67,8 @@ export default function normalizeComponent(
     options._ssrRegister = hook
   } else if (style) {
     hook = shadowMode
-      ? function() {
-        style.call(this, createInjectorShadow(this.$root.$options.shadowRoot))
+      ? function(context: any) {
+        style.call(this, createInjectorShadow(context, this.$root.$options.shadowRoot))
       }
       : function(context: any) {
           style.call(this, createInjector(context))
