@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.1"></a>
+## <small>1.1.1 (2019-10-26)</small>
+
+* fix: createInjectorShadow API ([91cb784](https://github.com/znck/vue-runtime-helpers/commit/91cb784))
+
+
+
 <a name="1.1.0"></a>
 ## 1.1.0 (2019-10-26)
 
