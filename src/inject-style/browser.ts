@@ -7,9 +7,7 @@ export interface StyleSource {
 }
 
 
-const isOldIE =
-  typeof navigator !== 'undefined' &&
-  /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase())
+let isOldIE: boolean | undefined
 
 export default function createInjector(context: any) {
   return (id: string, style: StyleSource) => addStyle(id, style)
@@ -24,6 +22,12 @@ export interface StyleElementContent {
 let HEAD: HTMLElement | undefined
 const styles: { [key: string]: StyleElementContent } = {}
 function addStyle(id: string, css: StyleSource) {
+  if (isOldIE === undefined) {
+    isOldIE =
+        typeof navigator !== 'undefined' &&
+        /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase())
+  }
+
   const group = isOldIE ? css.media || 'default' : id
   const style = styles[group] || (styles[group] = { ids: new Set(), styles: [] })
 
